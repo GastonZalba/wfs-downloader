@@ -37,9 +37,9 @@ def main():
         with open(f'{config}.json', 'r') as file:
             data = json.load(file)
             
-        output_format = data['output_format']
+        output_format = data['output_format'] or 'application/json'
+        srs = data['srs'] or 'urn:x-ogc:def:crs:EPSG:4326'
         bbox = data['bbox']   
-        srs = data['srs']      
         layers_group = data['group']
         
         for group in layers_group:
@@ -61,15 +61,25 @@ def main():
                     for target in layer['target']:
                         if 'file' in target:
                             filename = target["file"]
-                            print(f'--> Exporting to file {filename}')
 
                             # Create folder if not exists
                             os.makedirs(os.path.dirname(filename), exist_ok=True)
-                            
+
+                            file_already_exists = os.path.exists(filename)
+
+                            if (file_already_exists):
+                                if (overwrite):
+                                    print(f'--> Overwriting file {filename}')
+                                else:
+                                    print(f'--> Skiping existing file {filename}')
+                                    continue 
+                            else:
+                                print(f'--> Exporting to file {filename}')
+
                             with open(filename, 'wb') as f:
                                 f.write(response.read())
                         
-                        if 'table' in target['file']:
+                        if 'table' in target:
                             table = target["table"]
                             print(f'--> Exporting to table {table}')
 
