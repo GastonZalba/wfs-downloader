@@ -11,9 +11,11 @@ Script to download vector layers from WFS services. The process downloads all th
 - Modify the file `configuration-example.json` according to your needs
 - Rename the `database-example.ini` to `database.ini` and modify it
 - Run `python wfs-downloader.py --help` to show all available options and arguments
-- Run the script with something like this `python wfs-downloader.py configuration-example --database dev`
+- Run the script with something like this `python wfs-downloader.py configuration-example --dbconfig dev`
 - You can use the `sleep` arguments to avoid overloading the target server
 
-## TODO
+## @TODO
+- Add pagination for incomplete wfs requests
+- Add vector support to allow clipping features outside a polygon area
 - Support more WFS versions (only 1.1.0 supported)
 - Support others EPSG (only 4326 supported)
