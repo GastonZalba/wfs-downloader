@@ -11,7 +11,8 @@
                     "name": "geodesia-demarcacion:ramsac",
                     "target": [
                         {
-                            "table": "ign.ramsac"
+                            "schema": "ign",
+                            "table": "ramsac"
                         },
                         {
                             "file": "./output/ign/ramsac.geojson"
@@ -22,7 +23,8 @@
                     "name": "geodesia-demarcacion:nivelacion_alta_precision",
                     "target": [
                         {
-                            "table": "ign.nivelacion_alta_precision"
+                            "schema": "ign",
+                            "table": "nivelacion_alta_precision"
                         },
                         {
                             "file": "./output/ign/nivelacion_alta_precision.geojson"
@@ -33,7 +35,8 @@
                     "name": "geodesia-demarcacion:nivelacion_precision",
                     "target": [
                         {
-                            "table": "ign.nivelacion_precision"
+                            "schema": "ign",
+                            "table": "nivelacion_precision"
                         },
                         {
                             "file": "./output/ign/nivelacion_precision.geojson"
@@ -44,7 +47,8 @@
                     "name": "geodesia-demarcacion:nivelacion_topografica",
                     "target": [
                         {
-                            "table": "ign.nivelacion_topografica"
+                            "schema": "ign",
+                            "table": "nivelacion_topografica"
                         },
                         {
                             "file": "./output/ign/nivelacion_topografica.geojson"
@@ -55,7 +59,8 @@
                     "name": "geodesia-demarcacion:red_provincial",
                     "target": [
                         {
-                            "table": "ign.red_provincial"
+                            "schema": "ign",
+                            "table": "red_provincial"
                         },
                         {
                             "file": "./output/ign/red_provincial.geojson"

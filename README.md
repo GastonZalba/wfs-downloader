@@ -9,6 +9,11 @@ Script to download vector layers from WFS services. The process downloads all th
 ## Instructions
 - Load local enviroment `.venv\Scripts\activate`
 - Modify the file `configuration-example.json` according to your needs
+- Rename the `database-example.ini` to `database.ini` and modify it
 - Run `python wfs-downloader.py --help` to show all available options and arguments
 - Run the script with something like this `python wfs-downloader.py configuration-example`
 - You can use the `sleep` arguments to avoid overloading the target server
+
+## TODO
+- Support more version (only 1.1.0 supported)
+- Support other EPSG (only 4326 supported)
