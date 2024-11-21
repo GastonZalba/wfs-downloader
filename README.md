@@ -25,3 +25,5 @@ Allows you to:
 - Add vector support to allow clipping features outside a polygon area
 - Support more WFS versions (only 1.1.0 supported)
 - Support others EPSG (only 4326 supported)
+- Support to download all layers in the target geoserver
+- Support of a sigle global schema configuration, and auto naming the tables and files (to reduce the configuration file extension)

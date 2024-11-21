@@ -86,7 +86,7 @@ def main():
             wfs = WebFeatureService(url=group["url"], version=version)
 
             print(f"-> Connected to '{wfs.identification.title}'")
-            print(f"-> Downloading layers...")
+            print("-> Downloading layers...")
 
             for layer in group["layers"]:
                 layer_name = layer["name"]
