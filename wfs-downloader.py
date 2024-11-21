@@ -209,7 +209,7 @@ def main():
 
                             for feature in data["features"]:
                                 geom = geojson.dumps(feature["geometry"])
-                                values = tuple(properties.values())
+                                values = tuple(feature["properties"].values())
                                 db.cur.execute(insert_query, (geom, *values))
 
                             print(f"{Fore.GREEN}---> {len(data['features'])} entries inserted{Style.RESET_ALL}")
