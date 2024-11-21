@@ -8,7 +8,7 @@ Allows you to:
     - Control if you want to overwrite existing files
     - Control if you want to remove old tables, or only clean/add the new values (this can be useful if you have views attached to the table, but will fail if the columns changed between process)
 
-## Installation
+## Installation (tested using python 3.9)
 - Create a local enviroment running `python -m venv .venv` (install [virtualenv](https://virtualenv.pypa.io/en/latest/) if you don't have it)
 - Load the local enviroment: `.venv\Scripts\activate`
 - Install using `pip install -r requirements.txt`
