@@ -1,10 +1,9 @@
 import os.path
-from colorama import init, Fore, Style
 
 import psycopg2
+from colorama import Fore, Style
 
 from config import config
-
 
 DATABASE_FILE = 'database.ini'
 
