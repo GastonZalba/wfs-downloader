@@ -68,9 +68,6 @@ sleep = args.sleep
 database = args.dbconfig
 download_styles = args.styles
 
-db = DatabaseConnection(database) if database else None
-
-
 def get_valid_filename(name):
     s = str(name).strip().replace(" ", "_").replace(":", "--")
     s = re.sub(r"(?u)[^-\w.]", "", s)
@@ -94,11 +91,13 @@ def export_file(output, data):
         f.write(data)
 
 
-def export_to_table(schema, table, geojson_data):
+def export_to_table(db, schema, table, geojson_data):
 
     if not table:
         print("---> Table name is not specified, skipping...")
         return
+    
+    table = table.lower()
 
     print(f"--> Working on table '{schema}.{table}'")
 
@@ -119,7 +118,7 @@ def export_to_table(schema, table, geojson_data):
     table_exists = db.cur.fetchone()[0]
 
     create_table = True
-
+    
     if table_exists:
 
         if overwrite:
@@ -247,7 +246,7 @@ def main():
                     
                     export_file(output, r.text.encode())
 
-                if output_folder:                    
+                if output_folder:                   
                     output = os.path.join(
                         output_folder, f"{get_valid_filename(layer_name)}.geojson"
                     )
@@ -265,7 +264,9 @@ def main():
                         if len(layer_split_arr) > 1
                         else layer_split_arr[0]
                     )
-                    export_to_table(schema, table, geojson_data)
+                    
+                    db = DatabaseConnection(database)
+                    export_to_table(db, schema, table, geojson_data)
 
                 if sleep:
                     time.sleep(sleep)
