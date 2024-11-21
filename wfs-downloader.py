@@ -23,7 +23,7 @@ def main():
         database = "dev"
 
         parser = argparse.ArgumentParser(
-            description="Script to download images from a WMTS service"
+            description="Script to download features from WFS services"
         )
         parser.add_argument(
             "config",
@@ -80,19 +80,18 @@ def main():
         layers_group = data["group"]
 
         for group in layers_group:
-            print(f"Connecting to the server {group['url']}")
+            print(f"-> Connecting to the server {group['url']}...")
 
             version = group["version"] or "1.1.0"
             wfs = WebFeatureService(url=group["url"], version=version)
 
-            print(f"Downloading layers from {wfs.identification.title}")
-
-            print(list(wfs.contents))
+            print(f"-> Connected to '{wfs.identification.title}'")
+            print(f"-> Downloading layers...")
 
             for layer in group["layers"]:
                 layer_name = layer["name"]
                 print("\t")
-                print(f"-> Downloading layer {layer_name}")
+                print(f"-> Downloading layer '{layer_name}'")
 
                 response = wfs.getfeature(
                     typename=layer_name,
@@ -114,23 +113,32 @@ def main():
 
                             if file_already_exists:
                                 if overwrite:
-                                    print(f"--> Overwriting file {filename}")
+                                    print(f"--> Overwriting file '{filename}'")
                                 else:
-                                    print(f"--> Skiping existing file {filename}")
+                                    print(f"--> Skiping existing file '{filename}'")
                                     continue
                             else:
-                                print(f"--> Saving to file {filename}")
+                                print(f"--> Saving to file '{filename}'")
 
                             with open(filename, "wb") as f:
                                 f.write(geojson_data)
 
                         if "table" in target:
-                            table = target["table"]
+                            
                             schema = target["schema"] or "public"
-
+                            table = target["table"]
+                            
                             if not table:
-                                print(f"--> Table name is not specified, skipping...")
+                                print("---> Table name is not specified, skipping...")
                                 continue
+                            
+                            print(f"--> Working on table '{schema}.{table}'")
+
+                            if not hasattr(db, "cur"):
+                                print(
+                                    f"{Fore.RED}---> Invalid database configuration, skipping database operations'{Style.RESET_ALL}"
+                                )
+                                continue                         
 
                             sql = """
                                 SELECT EXISTS (
@@ -145,29 +153,23 @@ def main():
                             create_table = True
 
                             if table_exists:
+
                                 if overwrite:
                                     if drop_tables:
+                                        print("---> Removing previous table...")
                                         db.cur.execute(
                                             f"DROP TABLE IF EXISTS {schema}.{table} CASCADE;"
                                         )
-                                        print(
-                                            f"--> Removing old table {schema}.{table}"
-                                        )
                                     else:
                                         create_table = False
-                                        db.cur.execute(
-                                            f"DELETE * FROM {schema}.{table};"
-                                        )
-                                        print(
-                                            f"--> Removing values from {schema}.{table}"
-                                        )
+                                        print("---> Removing previous values...")
+                                        db.cur.execute(f"DELETE FROM {schema}.{table};")
+
                                 else:
                                     print(
-                                        f"--> Skiping existing table {schema}.{table}"
+                                        "---> Skiping table, already exists and overwrite is disabled"
                                     )
                                     continue
-
-                            print(f"--> Saving to table {schema}.{table}")
 
                             db.cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
 
@@ -196,7 +198,9 @@ def main():
                                 )
                                 """
                                 db.cur.execute(create_table_query)
-                                print(f"Table created {schema}{table}.")
+                                print("---> Table created")
+
+                            print("---> Saving values...")
 
                             insert_query = f"""
                                 INSERT INTO {schema}.{table} (geom, {", ".join(f'"{key}"' for key in properties.keys())})
@@ -208,11 +212,14 @@ def main():
                                 values = tuple(properties.values())
                                 db.cur.execute(insert_query, (geom, *values))
 
-                            print(f"Inserted entries in {schema}{table}.")
+                            print(f"{Fore.GREEN}---> {len(data['features'])} entries inserted{Style.RESET_ALL}")
                             db.conn.commit()
 
                 if sleep:
                     time.sleep(sleep)
+                    
+        print("\t")
+        print("--> PROCESS FINISHED <--")
 
     except Exception as error:
         print(f"{Fore.RED}{error}{Style.RESET_ALL}")
