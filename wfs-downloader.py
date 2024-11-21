@@ -77,9 +77,9 @@ def main():
         output_format = data["output_format"] or "application/json"
         srs = data["srs"] or "urn:x-ogc:def:crs:EPSG:4326"
         bbox = data["bbox"]
-        layers_group = data["group"]
+        layers_groups = data["groups"]
 
-        for group in layers_group:
+        for group in layers_groups:
             print(f"-> Connecting to the server {group['url']}...")
 
             version = group["version"] or "1.1.0"
