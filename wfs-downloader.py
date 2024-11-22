@@ -104,8 +104,6 @@ def export_to_table(db, schema, table, geojson_data):
         print("---> Table name is not specified, skipping...")
         return
 
-    table = table.lower()
-
     print(f"--> Working on table '{schema}.{table}'")
 
     if not hasattr(db, "cur"):
@@ -161,7 +159,7 @@ def export_to_table(db, schema, table, geojson_data):
             columns.append(f'"{key}" {column_type}')
 
         create_table_query = f"""
-        CREATE TABLE {schema}.{table} (
+        CREATE TABLE "{schema}"."{table}" (
             id SERIAL PRIMARY KEY,
             geom GEOMETRY(Geometry, 4326),
             {", ".join(columns)}
@@ -173,7 +171,7 @@ def export_to_table(db, schema, table, geojson_data):
     print("---> Saving values...")
 
     insert_query = f"""
-        INSERT INTO {schema}.{table} (geom, {", ".join(f'"{key}"' for key in properties.keys())})
+        INSERT INTO "{schema}"."{table}" (geom, {", ".join(f'"{key}"' for key in properties.keys())})
         VALUES (ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), {", ".join(["%s"] * len(properties))})
     """
 
