@@ -52,6 +52,11 @@ parser.add_argument(
     help="Download the sld styles",
 )
 parser.add_argument(
+    "--metadata",
+    action="store_true",
+    help="Request and store the layer's abstract, title and keywords",
+)
+parser.add_argument(
     "--sleep",
     type=float,
     metavar="Sleep time",
@@ -67,6 +72,8 @@ drop_tables = args.droptables
 sleep = args.sleep
 database = args.dbconfig
 download_styles = args.styles
+download_metadata = args.metadata
+
 
 def get_valid_filename(name):
     s = str(name).strip().replace(" ", "_").replace(":", "--")
@@ -96,7 +103,7 @@ def export_to_table(db, schema, table, geojson_data):
     if not table:
         print("---> Table name is not specified, skipping...")
         return
-    
+
     table = table.lower()
 
     print(f"--> Working on table '{schema}.{table}'")
@@ -118,7 +125,7 @@ def export_to_table(db, schema, table, geojson_data):
     table_exists = db.cur.fetchone()[0]
 
     create_table = True
-    
+
     if table_exists:
 
         if overwrite:
@@ -230,7 +237,7 @@ def main():
 
                 # global output folder configuration
                 output_folder = os.path.abspath(data["output_folder"])
-                
+
                 # create folder if not exists
                 os.makedirs(output_folder, exist_ok=True)
 
@@ -243,28 +250,43 @@ def main():
                     output = os.path.join(
                         output_folder, f"{get_valid_filename(layer_name)}.sld"
                     )
-                    
+
                     export_file(output, r.text.encode())
 
-                if output_folder:                   
+                if download_metadata:
+                    if layer_name in wfs.contents:
+
+                        layer_metadata = wfs.contents[layer_name]
+                        text = ""
+                        text += f"Title: {layer_metadata.title}\n"
+                        text += f"Abstract: {layer_metadata.abstract}\n"
+                        text += f"Keywords: {', '.join(layer_metadata.keywords)}\n"
+
+                        output = os.path.join(
+                            output_folder, f"{get_valid_filename(layer_name)}.txt"
+                        )
+
+                        export_file(output, text.encode())
+
+                if output_folder:
                     output = os.path.join(
                         output_folder, f"{get_valid_filename(layer_name)}.geojson"
                     )
 
                     export_file(output, geojson_data)
-                
+
                 if database:
                     schema = data["table_schema"] or "public"
 
                     # maybe remove the workspace from the layername
-                    layer_split_arr = layer_name.split(':')
-                    
+                    layer_split_arr = layer_name.split(":")
+
                     table = (
                         layer_split_arr[1]
                         if len(layer_split_arr) > 1
                         else layer_split_arr[0]
                     )
-                    
+
                     db = DatabaseConnection(database)
                     export_to_table(db, schema, table, geojson_data)
 
